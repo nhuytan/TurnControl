@@ -36,7 +36,6 @@ public class TurnControl {
 
         while (true) {
             System.out.println(commandGuide);
-            System.out.println(NewBranch.PENNY);
             String a = input.next();
             if (a.equals("1")) {
                 System.out.println("==> Please input Employee Name:");
@@ -241,5 +240,6 @@ public class TurnControl {
             }
         }
         System.out.println(tb.toString());
+        // command
     }
 }
