@@ -240,5 +240,6 @@ public class TurnControl {
             }
         }
         System.out.println(tb.toString());
+        // command
     }
 }
