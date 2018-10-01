@@ -17,12 +17,21 @@ public class Employee {
     public String EmployeeID;
     public String EmpName;
     LocalDateTime  CheckInTime;
-    public String[] Turn;
-    public ArrayList<String> Turn1;
-    int TotalTurn, Total;
+    public ArrayList<String> turnList;
+    int totalTurn, Total;
     int position;
     boolean active;
+    boolean isWorking;
 
+    public boolean isIsWorking() {
+        return isWorking;
+    }
+
+    public void setIsWorking(boolean isWorking) {
+        this.isWorking = isWorking;
+    }
+
+    
     public boolean isActive() {
         return active;
     }
@@ -52,6 +61,10 @@ public class Employee {
         return CheckInTime;
     }
 
+    /**
+     *
+     * @param CheckInTime
+     */
     public void setCheckInTime(LocalDateTime  CheckInTime) {
         this.CheckInTime = CheckInTime;
     }
@@ -61,28 +74,20 @@ public class Employee {
         this.EmpName = EmpName;
         this.CheckInTime = CheckInTime;
         this.Total=0;
-        this.TotalTurn=0;
-        this.Turn = new String[30];
-        this.Turn1 = new ArrayList<>();
+        this.totalTurn=0;
+        this.turnList = new ArrayList<>();
         this.active=true;
+        this.isWorking = false;
         this.position= Integer.parseInt(EmployeeID);
         
     }
 
-    public String[] getTurn() {
-        return Turn;
-    }
-
-    public void setTurn(String[] Turn) {
-        this.Turn = Turn;
-    }
-
     public int getTotalTurn() {
-        return TotalTurn;
+        return totalTurn;
     }
 
     public void setTotalTurn(int TotalTurn) {
-        this.TotalTurn = TotalTurn;
+        this.totalTurn = TotalTurn;
     }
 
     public int getTotal() {

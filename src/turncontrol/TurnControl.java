@@ -38,72 +38,13 @@ public class TurnControl {
             System.out.println(commandGuide);
             String a = input.next();
             if (a.equals("1")) {
-                System.out.println("==> Please input Employee Name:");
-                employeeName = input.next();
-                size = employee.size();
-                employeeID = Integer.toString(size + 1);
-                checkIn = LocalDateTime.now();
-                employee.add(new Employee(employeeID, employeeName, checkIn));
-                System.out.println("Add Employee " + employeeName + " Completed");
-
+                command1(employee, input);
             } else if (a.equals("2")) {
-                System.out.println("==> Please choose 'EmployeeID' below to check out...");
-                printActiveEmployee(employee);
-                employeeID = input.next();
-                while (!checkID(employeeID, employee)) {
-                    System.out.println("==> EmployeeID not found, enter again or 'e'to exit");
-                    employeeID = input.next();
-                }
-                if (employeeID.equals("e")) {
-                    System.out.println("==> Check out command not complete");
-                } else {
-
-                    int index = findEmployee(employeeID, employee);
-                    employee.get(index).setActive(false);
-                    System.out.println("==> Employee " + employee.get(index).getEmpName() + " Check Out Completed");
-                }
+                command2(employee, input);
             } else if (a.equals("3")) {
-                System.out.println("==> Please choose EmployeeID below to add turn...");
-                printActiveEmployee(employee);
-                employeeID = input.next();
-                while (!checkID(employeeID, employee)) {
-                    System.out.println("==> EmployeeID not found, choose again or 'e'to exit");
-                    employeeID = input.next();
-                }
-                if (employeeID.equals("e")) {
-                    System.out.println("==> Check out command not complete");
-                } else {
-                    int index = findEmployee(employeeID, employee);
-                    System.out.println("==> Enter amount:");
-                    String amount = input.next();
-                    System.out.println("==> Enter: '0'-Free Turn ; '1'-Count Turn");
-                    String freeTurnFlag = input.next();
-                    employee.get(index).Turn1.add(amount);
-                    employee.get(index).Turn1.add(freeTurnFlag);
-                    System.out.println("Turn list update for " + employee.get(index).getEmpName());
-                    System.out.println(getStringTurn(employee.get(index)));
-                }
-            } // remove turn
-            else if (a.equals("4")) {
-
-                int employeeIndex, indexTurn;
-                System.out.println("==> Please choose EmployeeID below to remove turn...");
-                printActiveEmployee(employee);
-                employeeID = input.next();
-                while (!checkID(employeeID, employee)) {
-                    System.out.println("==> EmployeeID not found, choose again or 'e'to exit");
-                    employeeID = input.next();
-                }
-                if (employeeID.equals("e")) {
-                    System.out.println("==> REMOVE COMMAND NOT COMPLETE");
-                } else {
-                    employeeIndex = findEmployee(employeeID, employee);
-                    indexTurn = getIndexTurn(employee.get(employeeIndex));
-                    removeTurn(employee.get(employeeIndex), indexTurn);
-
-                    System.out.println("Turn list update for " + employee.get(employeeIndex).getEmpName());
-                    System.out.println(getStringTurn(employee.get(employeeIndex)));
-                }
+                command3(employee, input);
+            } else if (a.equals("4")) {
+                command4(employee, input);
             } else if (a.equals("e")) {
                 print(employee);
                 System.out.println("==> ===PROGRAM EXIT===");
@@ -114,7 +55,6 @@ public class TurnControl {
                 System.out.println("==> WRONG COMMAND, TRY AGAIN <==!!");
                 System.out.println(commandGuide);
             }
-            
             System.out.println("=================================================================");
         }
     }
@@ -124,20 +64,20 @@ public class TurnControl {
         System.out.println("Please choose the turn below to remove");
         TableBuilder tbTurnList = new TableBuilder();
         tbTurnList.addRow("Turn No.", "Amount", "Free or Count");
-        for (int i = 0; i < (e.Turn1.size() / 2); i++) {
+        for (int i = 0; i < (e.turnList.size() / 2); i++) {
             String flag;
-            if (e.Turn1.get(i * 2 + 1).equals("0")) {
+            if (e.turnList.get(i * 2 + 1).equals("0")) {
                 flag = "Free";
             } else {
                 flag = "Count";
             }
-            tbTurnList.addRow(Integer.toString(i + 1), e.Turn1.get(i*2), flag);
+            tbTurnList.addRow(Integer.toString(i + 1), e.turnList.get(i * 2), flag);
         }
         System.out.println(tbTurnList.toString());
         Scanner input = new Scanner(System.in);
         index = input.next();
-        int numOfElement = e.Turn1.size() / 2;
-        while (!checkIndex(index,numOfElement)) {
+        int numOfElement = e.turnList.size() / 2;
+        while (!checkIndex(index, numOfElement)) {
             System.out.println("==> Index not found, choose again or 'e'to exit");
             index = input.next();
         }
@@ -153,8 +93,8 @@ public class TurnControl {
     public static void removeTurn(Employee e, int index) {
 
         if (index > 0) {
-            e.Turn1.remove((index - 1) * 2);
-            e.Turn1.remove((index - 1) * 2);
+            e.turnList.remove((index - 1) * 2);
+            e.turnList.remove((index - 1) * 2);
         }
 
     }
@@ -173,17 +113,17 @@ public class TurnControl {
         }
         return false;
     }
-       public static boolean checkIndex(String index,  int numOfElement) {
-     
-           if (index.equals("e") || index.equals("E"))
-               return true;
-           else if (Integer.parseInt(index) < 1 ||Integer.parseInt(index) > numOfElement )
-               return false;
 
-           return true;
+    public static boolean checkIndex(String index, int numOfElement) {
+
+        if (index.equals("e") || index.equals("E")) {
+            return true;
+        } else if (Integer.parseInt(index) < 1 || Integer.parseInt(index) > numOfElement) {
+            return false;
+        }
+
+        return true;
     }
-    
-    
 
     public static int findEmployee(String id, ArrayList<Employee> employee) {
         for (int i = 0; i < employee.size(); i++) {
@@ -212,14 +152,14 @@ public class TurnControl {
     //get the output string of Turn of specific employee
     public static String getStringTurn(Employee e) {
         String output = "";
-        for (int i = 0; i < e.Turn1.size(); i += 2) {
-            if (e.Turn1.get(i).compareTo("") == 1) {
+        for (int i = 0; i < e.turnList.size(); i += 2) {
+            if (e.turnList.get(i).compareTo("") == 1) {
                 return output;
             } else {
-                if (e.Turn1.get(i + 1).compareTo("1") == 0) {
-                    output = output + e.Turn1.get(i) + ",";
+                if (e.turnList.get(i + 1).compareTo("1") == 0) {
+                    output = output + e.turnList.get(i) + ",";
                 } else {
-                    output = output + "(" + e.Turn1.get(i) + "),";
+                    output = output + "(" + e.turnList.get(i) + "),";
                 }
             }
         }
@@ -241,5 +181,79 @@ public class TurnControl {
         }
         System.out.println(tb.toString());
         // command
+    }
+// check in
+    public static void command1(ArrayList<Employee> employee, Scanner input) {
+        System.out.println("==> Please input Employee Name:");
+        String employeeName = input.next();
+        int size = employee.size();
+        String employeeID = Integer.toString(size + 1);
+        LocalDateTime checkIn = LocalDateTime.now();
+        employee.add(new Employee(employeeID, employeeName, checkIn));
+        System.out.println("Add Employee " + employeeName + " Completed");
+    }
+
+    public static void command2(ArrayList<Employee> employee, Scanner input) {
+
+        System.out.println("==> Please choose 'EmployeeID' below to check out...");
+        printActiveEmployee(employee);
+        String employeeID = input.next();
+        while (!checkID(employeeID, employee)) {
+            System.out.println("==> EmployeeID not found, enter again or 'e'to exit");
+            employeeID = input.next();
+        }
+        if (employeeID.equals("e")) {
+            System.out.println("==> Check out command not complete");
+        } else {
+
+            int index = findEmployee(employeeID, employee);
+            employee.get(index).setActive(false);
+            System.out.println("==> Employee " + employee.get(index).getEmpName() + " Check Out Completed");
+        }
+
+    }
+
+    public static void command3(ArrayList<Employee> employee, Scanner input) {
+        System.out.println("==> Please choose EmployeeID below to add turn...");
+        printActiveEmployee(employee);
+        String employeeID = input.next();
+        while (!checkID(employeeID, employee)) {
+            System.out.println("==> EmployeeID not found, choose again or 'e'to exit");
+            employeeID = input.next();
+        }
+        if (employeeID.equals("e")) {
+            System.out.println("==> Check out command not complete");
+        } else {
+            int index = findEmployee(employeeID, employee);
+            System.out.println("==> Enter amount:");
+            String amount = input.next();
+            System.out.println("==> Enter: '0'-Free Turn ; '1'-Count Turn");
+            String freeTurnFlag = input.next();
+            employee.get(index).turnList.add(amount);
+            employee.get(index).turnList.add(freeTurnFlag);
+            System.out.println("Turn list update for " + employee.get(index).getEmpName());
+            System.out.println(getStringTurn(employee.get(index)));
+        }
+    }
+
+    public static void command4(ArrayList<Employee> employee, Scanner input) {
+        int employeeIndex, indexTurn;
+        System.out.println("==> Please choose EmployeeID below to remove turn...");
+        printActiveEmployee(employee);
+        String employeeID = input.next();
+        while (!checkID(employeeID, employee)) {
+            System.out.println("==> EmployeeID not found, choose again or 'e'to exit");
+            employeeID = input.next();
+        }
+        if (employeeID.equals("e")) {
+            System.out.println("==> REMOVE COMMAND NOT COMPLETE");
+        } else {
+            employeeIndex = findEmployee(employeeID, employee);
+            indexTurn = getIndexTurn(employee.get(employeeIndex));
+            removeTurn(employee.get(employeeIndex), indexTurn);
+
+            System.out.println("Turn list update for " + employee.get(employeeIndex).getEmpName());
+            System.out.println(getStringTurn(employee.get(employeeIndex)));
+        }
     }
 }
