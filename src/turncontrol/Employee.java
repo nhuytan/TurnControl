@@ -10,7 +10,8 @@ import java.util.ArrayList;
 
 /**
  *
- * @author nhuyt
+ * @author nhuytan
+ * edit 1
  */
 public class Employee {
 
