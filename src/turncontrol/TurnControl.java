@@ -140,11 +140,11 @@ public class TurnControl {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
         System.out.println("\nEmployee Table Details:");
         TableBuilder tb = new TableBuilder();
-        tb.addRow("EmployeeID", "EmployeeName", "CheckInTime", "Total", "Status", "Position", "Turn_List");
+        tb.addRow("EmployeeID", "EmployeeName", "CheckInTime", "Total","Total_Turn", "Status", "Position", "Turn_List");
         //System.out.println("EmployeeID\tEmployeeName\tCheckInTime\tTotal\tStatus\tPosition\n");
         for (int i = 0; i < employee.size(); i++) {
             String turnList = getStringTurn(employee.get(i));
-            tb.addRow(employee.get(i).getEmployeeID(), employee.get(i).getEmpName(), dtf.format(employee.get(i).getCheckInTime()), Integer.toString(employee.get(i).getTotal()), Boolean.toString(employee.get(i).isActive()), Integer.toString(employee.get(i).position), turnList);
+            tb.addRow(employee.get(i).getEmployeeID(), employee.get(i).getEmpName(), dtf.format(employee.get(i).getCheckInTime()), Integer.toString(employee.get(i).getTotal()),Integer.toString(employee.get(i).getTotalTurn()), Boolean.toString(employee.get(i).isActive()), Integer.toString(employee.get(i).position), turnList);
         }
         System.out.println(tb.toString());
     }
@@ -233,6 +233,7 @@ public class TurnControl {
             employee.get(index).turnList.add(freeTurnFlag);
             System.out.println("Turn list update for " + employee.get(index).getEmpName());
             System.out.println(getStringTurn(employee.get(index)));
+            UpdateTotal(employee.get(index));
         }
     }
 
@@ -251,9 +252,26 @@ public class TurnControl {
             employeeIndex = findEmployee(employeeID, employee);
             indexTurn = getIndexTurn(employee.get(employeeIndex));
             removeTurn(employee.get(employeeIndex), indexTurn);
-
+            UpdateTotal(employee.get(employeeIndex));
             System.out.println("Turn list update for " + employee.get(employeeIndex).getEmpName());
             System.out.println(getStringTurn(employee.get(employeeIndex)));
+        }
+    }
+    
+    public static void UpdateTotal(Employee e)
+    {
+        e.setTotal(0);
+        e.setTotalTurn(0);
+        if(!e.turnList.isEmpty())
+        {
+            for (int i=0;i<e.turnList.size();i+=2)
+            {
+                e.setTotal(e.getTotal()+Integer.parseInt(e.turnList.get(i)));
+                if(e.turnList.get(i+1).compareTo("0")==1)
+                {
+                    e.setTotalTurn(e.getTotalTurn()+Integer.parseInt(e.turnList.get(i)));
+                }
+            }
         }
     }
 }
