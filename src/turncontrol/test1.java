@@ -70,7 +70,7 @@ public class test1 {
         this.CheckInTime = CheckInTime;
     }
 
-    public Employee(String EmployeeID, String EmpName, LocalDateTime  CheckInTime) {
+    public test1(String EmployeeID, String EmpName, LocalDateTime  CheckInTime) {
         this.EmployeeID = EmployeeID;
         this.EmpName = EmpName;
         this.CheckInTime = CheckInTime;

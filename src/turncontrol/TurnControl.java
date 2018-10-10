@@ -32,6 +32,7 @@ public class TurnControl {
         tbCommandGuide.addRow("Enter Command: ", "=========", "=========");
         tbCommandGuide.addRow("1-Check In", "2-Check Out", "e-Exit Program");
         tbCommandGuide.addRow("p-Print List", "3-Add Turn", "4-Remove Turn");
+        tbCommandGuide.addRow("5-Revert Working Status", "----", "----");
         String commandGuide = tbCommandGuide.toString();
 
         while (true) {
@@ -45,6 +46,8 @@ public class TurnControl {
                 command3(employee, input);
             } else if (a.equals("4")) {
                 command4(employee, input);
+            } else if (a.equals("5")) {
+                command5(employee, input);
             } else if (a.equals("e")) {
                 print(employee);
                 System.out.println("==> ===PROGRAM EXIT===");
@@ -140,11 +143,11 @@ public class TurnControl {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
         System.out.println("\nEmployee Table Details:");
         TableBuilder tb = new TableBuilder();
-        tb.addRow("EmployeeID", "EmployeeName", "CheckInTime", "Total","Total_Turn", "Status", "Position", "Turn_List");
+        tb.addRow("EmployeeID", "EmployeeName", "CheckInTime", "Total", "Total_Turn", "Is_Working", "Status", "Position", "Turn_List");
         //System.out.println("EmployeeID\tEmployeeName\tCheckInTime\tTotal\tStatus\tPosition\n");
         for (int i = 0; i < employee.size(); i++) {
             String turnList = getStringTurn(employee.get(i));
-            tb.addRow(employee.get(i).getEmployeeID(), employee.get(i).getEmpName(), dtf.format(employee.get(i).getCheckInTime()), Integer.toString(employee.get(i).getTotal()),Integer.toString(employee.get(i).getTotalTurn()), Boolean.toString(employee.get(i).isActive()), Integer.toString(employee.get(i).position), turnList);
+            tb.addRow(employee.get(i).getEmployeeID(), employee.get(i).getEmpName(), dtf.format(employee.get(i).getCheckInTime()), Integer.toString(employee.get(i).getTotal()), Integer.toString(employee.get(i).getTotalTurn()), Boolean.toString(employee.get(i).isIsWorking()), Boolean.toString(employee.get(i).isActive()), Integer.toString(employee.get(i).position), turnList);
         }
         System.out.println(tb.toString());
     }
@@ -183,6 +186,7 @@ public class TurnControl {
         // command
     }
 // check in
+
     public static void command1(ArrayList<Employee> employee, Scanner input) {
         System.out.println("==> Please input Employee Name:");
         String employeeName = input.next();
@@ -190,7 +194,7 @@ public class TurnControl {
         String employeeID = Integer.toString(size + 1);
         LocalDateTime checkIn = LocalDateTime.now();
         employee.add(new Employee(employeeID, employeeName, checkIn));
-        System.out.println("Add Employee " + employeeName + " Completed");
+        System.out.println("==> Employee \"" + employeeName + "\" Check-In Completed");
     }
 
     public static void command2(ArrayList<Employee> employee, Scanner input) {
@@ -208,7 +212,7 @@ public class TurnControl {
 
             int index = findEmployee(employeeID, employee);
             employee.get(index).setActive(false);
-            System.out.println("==> Employee " + employee.get(index).getEmpName() + " Check Out Completed");
+            System.out.println("==> Employee \"" + employee.get(index).getEmpName() + "\" Check-Out Completed");
         }
 
     }
@@ -234,7 +238,9 @@ public class TurnControl {
             System.out.println("Turn list update for " + employee.get(index).getEmpName());
             System.out.println(getStringTurn(employee.get(index)));
             UpdateTotal(employee.get(index));
+            System.out.println("==> Add " + amount + "$ to \"" + employee.get(index).getEmpName() + "\" Successful");
         }
+
     }
 
     public static void command4(ArrayList<Employee> employee, Scanner input) {
@@ -257,21 +263,43 @@ public class TurnControl {
             System.out.println(getStringTurn(employee.get(employeeIndex)));
         }
     }
-    
-    public static void UpdateTotal(Employee e)
-    {
+
+    public static void command5(ArrayList<Employee> employee, Scanner input) {
+        int employeeIndex, indexTurn;
+        System.out.println("==> Please choose EmployeeID below to change working status...");
+        printActiveEmployee(employee);
+        String employeeID = input.next();
+        while (!checkID(employeeID, employee)) {
+            System.out.println("==> EmployeeID not found, choose again or 'e'to exit");
+            employeeID = input.next();
+        }
+        if (employeeID.equals("e")) {
+            System.out.println("==> REMOVE COMMAND NOT COMPLETE");
+        } else {
+            employeeIndex = findEmployee(employeeID, employee);
+            if (employee.get(employeeIndex).isIsWorking()) {
+                setWorking(employee.get(employeeIndex), false);
+            } else {
+                setWorking(employee.get(employeeIndex), true);
+            }
+            System.out.println("Working status of employee \"" + employee.get(employeeIndex).getEmpName() + "\" change from \"" + !employee.get(employeeIndex).isIsWorking() + "\" to \"" + employee.get(employeeIndex).isIsWorking()+"\"");
+        }
+    }
+
+    public static void UpdateTotal(Employee e) {
         e.setTotal(0);
         e.setTotalTurn(0);
-        if(!e.turnList.isEmpty())
-        {
-            for (int i=0;i<e.turnList.size();i+=2)
-            {
-                e.setTotal(e.getTotal()+Integer.parseInt(e.turnList.get(i)));
-                if(e.turnList.get(i+1).compareTo("0")==1)
-                {
-                    e.setTotalTurn(e.getTotalTurn()+Integer.parseInt(e.turnList.get(i)));
+        if (!e.turnList.isEmpty()) {
+            for (int i = 0; i < e.turnList.size(); i += 2) {
+                e.setTotal(e.getTotal() + Integer.parseInt(e.turnList.get(i)));
+                if (e.turnList.get(i + 1).compareTo("0") == 1) {
+                    e.setTotalTurn(e.getTotalTurn() + Integer.parseInt(e.turnList.get(i)));
                 }
             }
         }
+    }
+
+    public static void setWorking(Employee e, boolean status) {
+        e.setIsWorking(status);
     }
 }
