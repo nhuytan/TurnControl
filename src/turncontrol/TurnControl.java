@@ -48,11 +48,11 @@ public class TurnControl {
                 command4(employee, input);
             } else if (a.equals("5")) {
                 command5(employee, input);
-            } else if (a.equals("e")) {
+            } else if (a.toUpperCase().equals("E")) {
                 print(employee);
                 System.out.println("==> ===PROGRAM EXIT===");
                 break;
-            } else if (a.equals("p")) {
+            } else if (a.toUpperCase().equals("P")) {
                 print(employee);
             } else {
                 System.out.println("==> WRONG COMMAND, TRY AGAIN <==!!");
@@ -107,11 +107,15 @@ public class TurnControl {
     }
 
     public static boolean checkID(String id, ArrayList<Employee> employee) {
-        for (int i = 0; i < employee.size(); i++) {
-            if (id.equals("e") || id.equals("E")) {
-                return true;
-            } else if (employee.get(i).getEmployeeID().equals(id) && employee.get(i).isActive()) {
-                return true;
+        if (employee.size() == 0) {
+            return true;
+        } else {
+            for (int i = 0; i < employee.size(); i++) {
+                if (id.equals("e") || id.equals("E")) {
+                    return true;
+                } else if (employee.get(i).getEmployeeID().equals(id) && employee.get(i).isActive()) {
+                    return true;
+                }
             }
         }
         return false;
@@ -265,25 +269,29 @@ public class TurnControl {
     }
 
     public static void command5(ArrayList<Employee> employee, Scanner input) {
-        int employeeIndex, indexTurn;
-        System.out.println("==> Please choose EmployeeID below to change working status...");
-        printActiveEmployee(employee);
-        String employeeID = input.next();
-        while (!checkID(employeeID, employee)) {
-            System.out.println("==> EmployeeID not found, choose again or 'e'to exit");
-            employeeID = input.next();
-        }
-        if (employeeID.equals("e")) {
-            System.out.println("==> REMOVE COMMAND NOT COMPLETE");
-        } else {
-            employeeIndex = findEmployee(employeeID, employee);
-            if (employee.get(employeeIndex).isIsWorking()) {
-                setWorking(employee.get(employeeIndex), false);
-            } else {
-                setWorking(employee.get(employeeIndex), true);
+        if (employee.size() > 0) {
+            int employeeIndex, indexTurn;
+            System.out.println("==> Please choose EmployeeID below to change working status...");
+            printActiveEmployee(employee);
+            String employeeID = input.next();
+            while (!checkID(employeeID, employee)) {
+                System.out.println("==> EmployeeID not found, choose again or 'e'to exit");
+                employeeID = input.next();
             }
-            System.out.println("Working status of employee \"" + employee.get(employeeIndex).getEmpName() + "\" change from \"" + !employee.get(employeeIndex).isIsWorking() + "\" to \"" + employee.get(employeeIndex).isIsWorking()+"\"");
+            if (employeeID.equals("e")) {
+                System.out.println("==> REMOVE COMMAND NOT COMPLETE");
+            } else {
+                employeeIndex = findEmployee(employeeID, employee);
+                if (employee.get(employeeIndex).isIsWorking()) {
+                    setWorking(employee.get(employeeIndex), false);
+                } else {
+                    setWorking(employee.get(employeeIndex), true);
+                }
+                System.out.println("Working status of employee \"" + employee.get(employeeIndex).getEmpName() + "\" change from \"" + !employee.get(employeeIndex).isIsWorking() + "\" to \"" + employee.get(employeeIndex).isIsWorking() + "\"");
+            }
         }
+        else 
+            System.out.println("==> DON'T HAVE ANY EMPLOYEE SIGN IN");
     }
 
     public static void UpdateTotal(Employee e) {
