@@ -17,11 +17,6 @@ public class TurnControl {
      */
     public static void main(String[] args) {
 
-        /*
-            User input: 
-               * Checkin (1) --> enter name --> generate ID, get datetime --> add to arraylist, update list employee(not finish)
-               * Checkout (2) --> enter ID --> set status to false
-         */
         Scanner input = new Scanner(System.in);
         //Employee[] employee = new Employee[20];
         ArrayList<Employee> employee = new ArrayList<Employee>(20);
