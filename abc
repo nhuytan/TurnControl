@@ -1,0 +1,158 @@
+[1mdiff --git a/build/classes/turncontrol/Employee.class b/build/classes/turncontrol/Employee.class[m
+[1mindex 68cd8b4..56e64f7 100644[m
+Binary files a/build/classes/turncontrol/Employee.class and b/build/classes/turncontrol/Employee.class differ
+[1mdiff --git a/build/classes/turncontrol/TurnControl.class b/build/classes/turncontrol/TurnControl.class[m
+[1mindex 96af55c..00b8192 100644[m
+Binary files a/build/classes/turncontrol/TurnControl.class and b/build/classes/turncontrol/TurnControl.class differ
+[1mdiff --git a/nbproject/private/private.xml b/nbproject/private/private.xml[m
+[1mindex 4800568..03d876d 100644[m
+[1m--- a/nbproject/private/private.xml[m
+[1m+++ b/nbproject/private/private.xml[m
+[36m@@ -3,7 +3,7 @@[m
+     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>[m
+     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">[m
+         <group>[m
+[31m-            <file>file:/C:/Users/nhuyt/OneDrive/Documents/NetBeansProjects/TurnControl/src/turncontrol/TurnControl.java</file>[m
+[32m+[m[32m            <file>file:/C:/Users/nhuyt/OneDrive/Documents/NetBeansProjects/TurnControl/src/turncontrol/Employee.java</file>[m[41m[m
+         </group>[m
+     </open-files>[m
+ </project-private>[m
+[1mdiff --git a/src/turncontrol/TurnControl.java b/src/turncontrol/TurnControl.java[m
+[1mindex 0d27261..c96fe24 100644[m
+[1m--- a/src/turncontrol/TurnControl.java[m
+[1m+++ b/src/turncontrol/TurnControl.java[m
+[36m@@ -32,6 +32,7 @@[m [mpublic class TurnControl {[m
+         tbCommandGuide.addRow("Enter Command: ", "=========", "=========");[m
+         tbCommandGuide.addRow("1-Check In", "2-Check Out", "e-Exit Program");[m
+         tbCommandGuide.addRow("p-Print List", "3-Add Turn", "4-Remove Turn");[m
+[32m+[m[32m        tbCommandGuide.addRow("5-Revert Working Status", "----", "----");[m[41m[m
+         String commandGuide = tbCommandGuide.toString();[m
+ [m
+         while (true) {[m
+[36m@@ -45,6 +46,8 @@[m [mpublic class TurnControl {[m
+                 command3(employee, input);[m
+             } else if (a.equals("4")) {[m
+                 command4(employee, input);[m
+[32m+[m[32m            } else if (a.equals("5")) {[m[41m[m
+[32m+[m[32m                command5(employee, input);[m[41m[m
+             } else if (a.equals("e")) {[m
+                 print(employee);[m
+                 System.out.println("==> ===PROGRAM EXIT===");[m
+[36m@@ -140,11 +143,11 @@[m [mpublic class TurnControl {[m
+         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");[m
+         System.out.println("\nEmployee Table Details:");[m
+         TableBuilder tb = new TableBuilder();[m
+[31m-        tb.addRow("EmployeeID", "EmployeeName", "CheckInTime", "Total","Total_Turn", "Status", "Position", "Turn_List");[m
+[32m+[m[32m        tb.addRow("EmployeeID", "EmployeeName", "CheckInTime", "Total", "Total_Turn", "Is_Working", "Status", "Position", "Turn_List");[m[41m[m
+         //System.out.println("EmployeeID\tEmployeeName\tCheckInTime\tTotal\tStatus\tPosition\n");[m
+         for (int i = 0; i < employee.size(); i++) {[m
+             String turnList = getStringTurn(employee.get(i));[m
+[31m-            tb.addRow(employee.get(i).getEmployeeID(), employee.get(i).getEmpName(), dtf.format(employee.get(i).getCheckInTime()), Integer.toString(employee.get(i).getTotal()),Integer.toString(employee.get(i).getTotalTurn()), Boolean.toString(employee.get(i).isActive()), Integer.toString(employee.get(i).position), turnList);[m
+[32m+[m[32m            tb.addRow(employee.get(i).getEmployeeID(), employee.get(i).getEmpName(), dtf.format(employee.get(i).getCheckInTime()), Integer.toString(employee.get(i).getTotal()), Integer.toString(employee.get(i).getTotalTurn()), Boolean.toString(employee.get(i).isIsWorking()), Boolean.toString(employee.get(i).isActive()), Integer.toString(employee.get(i).position), turnList);[m[41m[m
+         }[m
+         System.out.println(tb.toString());[m
+     }[m
+[36m@@ -183,6 +186,7 @@[m [mpublic class TurnControl {[m
+         // command[m
+     }[m
+ // check in[m
+[32m+[m[41m[m
+     public static void command1(ArrayList<Employee> employee, Scanner input) {[m
+         System.out.println("==> Please input Employee Name:");[m
+         String employeeName = input.next();[m
+[36m@@ -190,7 +194,7 @@[m [mpublic class TurnControl {[m
+         String employeeID = Integer.toString(size + 1);[m
+         LocalDateTime checkIn = LocalDateTime.now();[m
+         employee.add(new Employee(employeeID, employeeName, checkIn));[m
+[31m-        System.out.println("Add Employee " + employeeName + " Completed");[m
+[32m+[m[32m        System.out.println("==> Employee \"" + employeeName + "\" Check-In Completed");[m[41m[m
+     }[m
+ [m
+     public static void command2(ArrayList<Employee> employee, Scanner input) {[m
+[36m@@ -208,7 +212,7 @@[m [mpublic class TurnControl {[m
+ [m
+             int index = findEmployee(employeeID, employee);[m
+             employee.get(index).setActive(false);[m
+[31m-            System.out.println("==> Employee " + employee.get(index).getEmpName() + " Check Out Completed");[m
+[32m+[m[32m            System.out.println("==> Employee \"" + employee.get(index).getEmpName() + "\" Check-Out Completed");[m[41m[m
+         }[m
+ [m
+     }[m
+[36m@@ -234,7 +238,9 @@[m [mpublic class TurnControl {[m
+             System.out.println("Turn list update for " + employee.get(index).getEmpName());[m
+             System.out.println(getStringTurn(employee.get(index)));[m
+             UpdateTotal(employee.get(index));[m
+[32m+[m[32m            System.out.println("==> Add " + amount + "$ to \"" + employee.get(index).getEmpName() + "\" Successful");[m[41m[m
+         }[m
+[32m+[m[41m[m
+     }[m
+ [m
+     public static void command4(ArrayList<Employee> employee, Scanner input) {[m
+[36m@@ -257,21 +263,43 @@[m [mpublic class TurnControl {[m
+             System.out.println(getStringTurn(employee.get(employeeIndex)));[m
+         }[m
+     }[m
+[31m-    [m
+[31m-    public static void UpdateTotal(Employee e)[m
+[31m-    {[m
+[32m+[m[41m[m
+[32m+[m[32m    public static void command5(ArrayList<Employee> employee, Scanner input) {[m[41m[m
+[32m+[m[32m        int employeeIndex, indexTurn;[m[41m[m
+[32m+[m[32m        System.out.println("==> Please choose EmployeeID below to change working status...");[m[41m[m
+[32m+[m[32m        printActiveEmployee(employee);[m[41m[m
+[32m+[m[32m        String employeeID = input.next();[m[41m[m
+[32m+[m[32m        while (!checkID(employeeID, employee)) {[m[41m[m
+[32m+[m[32m            System.out.println("==> EmployeeID not found, choose again or 'e'to exit");[m[41m[m
+[32m+[m[32m            employeeID = input.next();[m[41m[m
+[32m+[m[32m        }[m[41m[m
+[32m+[m[32m        if (employeeID.equals("e")) {[m[41m[m
+[32m+[m[32m            System.out.println("==> REMOVE COMMAND NOT COMPLETE");[m[41m[m
+[32m+[m[32m        } else {[m[41m[m
+[32m+[m[32m            employeeIndex = findEmployee(employeeID, employee);[m[41m[m
+[32m+[m[32m            if (employee.get(employeeIndex).isIsWorking()) {[m[41m[m
+[32m+[m[32m                setWorking(employee.get(employeeIndex), false);[m[41m[m
+[32m+[m[32m            } else {[m[41m[m
+[32m+[m[32m                setWorking(employee.get(employeeIndex), true);[m[41m[m
+[32m+[m[32m            }[m[41m[m
+[32m+[m[32m            System.out.println("Working status of employee \"" + employee.get(employeeIndex).getEmpName() + "\" change from \"" + !employee.get(employeeIndex).isIsWorking() + "\" to \"" + employee.get(employeeIndex).isIsWorking()+"\"");[m[41m[m
+[32m+[m[32m        }[m[41m[m
+[32m+[m[32m    }[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    public static void UpdateTotal(Employee e) {[m[41m[m
+         e.setTotal(0);[m
+         e.setTotalTurn(0);[m
+[31m-        if(!e.turnList.isEmpty())[m
+[31m-        {[m
+[31m-            for (int i=0;i<e.turnList.size();i+=2)[m
+[31m-            {[m
+[31m-                e.setTotal(e.getTotal()+Integer.parseInt(e.turnList.get(i)));[m
+[31m-                if(e.turnList.get(i+1).compareTo("0")==1)[m
+[31m-                {[m
+[31m-                    e.setTotalTurn(e.getTotalTurn()+Integer.parseInt(e.turnList.get(i)));[m
+[32m+[m[32m        if (!e.turnList.isEmpty()) {[m[41m[m
+[32m+[m[32m            for (int i = 0; i < e.turnList.size(); i += 2) {[m[41m[m
+[32m+[m[32m                e.setTotal(e.getTotal() + Integer.parseInt(e.turnList.get(i)));[m[41m[m
+[32m+[m[32m                if (e.turnList.get(i + 1).compareTo("0") == 1) {[m[41m[m
+[32m+[m[32m                    e.setTotalTurn(e.getTotalTurn() + Integer.parseInt(e.turnList.get(i)));[m[41m[m
+                 }[m
+             }[m
+         }[m
+     }[m
+[32m+[m[41m[m
+[32m+[m[32m    public static void setWorking(Employee e, boolean status) {[m[41m[m
+[32m+[m[32m        e.setIsWorking(status);[m[41m[m
+[32m+[m[32m    }[m[41m[m
+ }[m
+[1mdiff --git a/src/turncontrol/test1.java b/src/turncontrol/test1.java[m
+[1mindex f3515bb..0f7de07 100644[m
+[1m--- a/src/turncontrol/test1.java[m
+[1m+++ b/src/turncontrol/test1.java[m
+[36m@@ -70,7 +70,7 @@[m [mpublic class test1 {[m
+         this.CheckInTime = CheckInTime;[m
+     }[m
+ [m
+[31m-    public Employee(String EmployeeID, String EmpName, LocalDateTime  CheckInTime) {[m
+[32m+[m[32m    public test1(String EmployeeID, String EmpName, LocalDateTime  CheckInTime) {[m
+         this.EmployeeID = EmployeeID;[m
+         this.EmpName = EmpName;[m
+         this.CheckInTime = CheckInTime;[m
