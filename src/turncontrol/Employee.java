@@ -24,6 +24,10 @@ public class Employee {
     boolean active;
     boolean isWorking;
 
+    Employee() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     public boolean isIsWorking() {
         return isWorking;
     }
@@ -106,6 +110,5 @@ public class Employee {
     public void setPosition(int position) {
         this.position = position;
     }
-    
 
 }
