@@ -3,28 +3,22 @@ package turncontrol;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 
 /**
  *
  * @author nhuytan
+ * add collaborator lanhsunam987
  */
 public class TurnControl {
 
-    /**
-     * @param args the command line arguments
-     */
+    public static final int STEP_TURN = 15;
+
     public static void main(String[] args) {
 
-        /*
-            User input: 
-               * Checkin (1) --> enter name --> generate ID, get datetime --> add to arraylist, update list employee(not finish)
-               * Checkout (2) --> enter ID --> set status to false
-         */
         Scanner input = new Scanner(System.in);
         //Employee[] employee = new Employee[20];
-        ArrayList<Employee> employee = new ArrayList<Employee>(20);
+        ArrayList<Employee> employee = new ArrayList<>(20);
         String employeeName, employeeID;
         int size;
         LocalDateTime checkIn, checkOut;
@@ -32,7 +26,7 @@ public class TurnControl {
         tbCommandGuide.addRow("Enter Command: ", "=========", "=========");
         tbCommandGuide.addRow("1-Check In", "2-Check Out", "e-Exit Program");
         tbCommandGuide.addRow("p-Print List", "3-Add Turn", "4-Remove Turn");
-        tbCommandGuide.addRow("5-Revert Working Status", "----", "----");
+        tbCommandGuide.addRow("5-Revert Working Status", "6-Update Turn", "----");
         String commandGuide = tbCommandGuide.toString();
 
         while (true) {
@@ -40,14 +34,22 @@ public class TurnControl {
             String a = input.next();
             if (a.equals("1")) {
                 command1(employee, input);
+                updatePosition(employee);
             } else if (a.equals("2")) {
                 command2(employee, input);
+                updatePosition(employee);
             } else if (a.equals("3")) {
                 command3(employee, input);
+                updatePosition(employee);
             } else if (a.equals("4")) {
                 command4(employee, input);
+                updatePosition(employee);
             } else if (a.equals("5")) {
                 command5(employee, input);
+                updatePosition(employee);
+            } else if (a.equals("6")) {
+                command6(employee, input);
+                updatePosition(employee);
             } else if (a.toUpperCase().equals("E")) {
                 //print(employee);
                 System.out.println("==> ===PROGRAM EXIT===");
@@ -69,10 +71,19 @@ public class TurnControl {
             System.out.println("=================================================================");
         }
     }
-
+// HELP FUNCTION: show the index of Turn need to be edited, it differs compare with index show in console
+/*
+array 01 23 45 67
+index show  index_in_array
+User choose Function return
+1           0
+2           2
+3           4
+4           6
+     */
     public static int getIndexTurn(Employee e) {
         String index;
-        System.out.println("Please choose the turn below to remove");
+        System.out.println("Please choose the turn below to \"remove/edit\"");
         TableBuilder tbTurnList = new TableBuilder();
         tbTurnList.addRow("Turn No.", "Amount", "Free or Count");
         for (int i = 0; i < (e.turnList.size() / 2); i++) {
@@ -89,35 +100,29 @@ public class TurnControl {
         index = input.next();
         int numOfElement = e.turnList.size() / 2;
         while (!checkIndex(index, numOfElement)) {
-            System.out.println("==> Index not found, choose again or 'e'to exit");
+            System.out.println("==> Index not found, choose again or 'E'to exit");
             index = input.next();
         }
-        if (index.equals("e")) {
+        if (index.toUpperCase().equals("E")) {
             System.out.println("==> REMOVE TURN COMMAND NOT COMPLETE");
-            return 0;
+            return -1;
         } else {
-            return Integer.parseInt(index);
+            return (Integer.parseInt(index) - 1) * 2;
         }
     }
 
     public static void removeTurn(Employee e, int index) {
-
-        if (index > 0) {
-            e.turnList.remove((index - 1) * 2);
-            e.turnList.remove((index - 1) * 2);
-        }
+        e.turnList.remove(index);
+        e.turnList.remove(index);
     }
 
-    public static void updateTurn(ArrayList<Employee> employee, int index, String amount, String freeTurnFlag) {
-
-    }
-
+// HELP FUNCTION: .......
     public static boolean checkID(String id, ArrayList<Employee> employee) {
-        if (employee.size() == 0) {
+        if (employee.isEmpty()) {
             return true;
         } else {
             for (int i = 0; i < employee.size(); i++) {
-                if (id.equals("e") || id.equals("E")) {
+                if (id.toUpperCase().equals("E")) {
                     return true;
                 } else if (employee.get(i).getEmployeeID().equals(id) && employee.get(i).isActive()) {
                     return true;
@@ -127,9 +132,10 @@ public class TurnControl {
         return false;
     }
 
+// HELP FUNCTION: .......
     public static boolean checkIndex(String index, int numOfElement) {
 
-        if (index.equals("e") || index.equals("E")) {
+        if (index.toUpperCase().equals("E")) {
             return true;
         } else if (Integer.parseInt(index) < 1 || Integer.parseInt(index) > numOfElement) {
             return false;
@@ -137,9 +143,10 @@ public class TurnControl {
         return true;
     }
 
+// HELP FUNCTION: .......
     public static int findEmployee(String id, ArrayList<Employee> employee) {
         for (int i = 0; i < employee.size(); i++) {
-            if (id.equals("e") || id.equals("E")) {
+            if (id.toUpperCase().equals("E")) {
                 return -1;
             } else if (employee.get(i).getEmployeeID().equals(id)) {
                 return i;
@@ -156,7 +163,9 @@ public class TurnControl {
         String employeeID = Integer.toString(size + 1);
         LocalDateTime checkIn = LocalDateTime.now();
         employee.add(new Employee(employeeID, employeeName, checkIn));
+        //updatePosition(employee);
         System.out.println("==> Employee \"" + employeeName + "\" Check-In Completed");
+
     }
 
 // COMMAND CHECK-OUT
@@ -166,10 +175,10 @@ public class TurnControl {
             printActiveEmployee(employee);
             String employeeID = input.next();
             while (!checkID(employeeID, employee)) {
-                System.out.println("==> EmployeeID not found, enter again or 'e'to exit");
+                System.out.println("==> EmployeeID not found, enter again or 'E'to exit");
                 employeeID = input.next();
             }
-            if (employeeID.equals("e")) {
+            if (employeeID.toUpperCase().equals("E")) {
                 System.out.println("==> Check out command not complete");
             } else {
                 int index = findEmployee(employeeID, employee);
@@ -178,22 +187,23 @@ public class TurnControl {
                         + "\" Check-Out Completed");
             }
         } else {
-            System.out.println("==> DON'T HAVE ANY EMPLOYEE TO CHECK OUT");
+            System.out.println("==> DON'T HAVE ANY EMPLOYEE SIGN IN");
         }
+
+        //updatePosition(employee);
     }
 
 // COMMAND ADD TURN
     public static void command3(ArrayList<Employee> employee, Scanner input) {
-        System.out.println("==> Please choose EmployeeID below to add turn...");
-        printActiveEmployee(employee);
-        String employeeID = input.next();
-        while (!checkID(employeeID, employee)) {
-            System.out.println("==> EmployeeID not found, choose again or 'e'to exit");
-            employeeID = input.next();
-        }
-        if (employeeID.equals("e")) {
-            System.out.println("==> Check out command not complete");
-        } else {
+
+        if (employee.size() > 0) {
+            System.out.println("==> Please choose EmployeeID below to add turn...");
+            printActiveEmployee(employee);
+            String employeeID = input.next();
+            while (!checkID(employeeID, employee)) {
+                System.out.println("==> EmployeeID not found, choose again or 'E'to exit");
+                employeeID = input.next();
+            }
             int index = findEmployee(employeeID, employee);
             System.out.println("==> Enter amount:");
             String amount = input.next();
@@ -205,43 +215,51 @@ public class TurnControl {
             System.out.println(getStringTurn(employee.get(index)));
             UpdateTotal(employee.get(index));
             System.out.println("==> Add " + amount + "$ to \"" + employee.get(index).getEmpName() + "\" Successful");
+        } else {
+            //printActiveEmployee(employee);
+            System.out.println("==> DON'T HAVE ANY EMPLOYEE SIGN IN");
         }
     }
 
 // COMMAND REMOVE TURN
     public static void command4(ArrayList<Employee> employee, Scanner input) {
-        int employeeIndex, indexTurn;
-        System.out.println("==> Please choose EmployeeID below to remove turn...");
-        printActiveEmployee(employee);
-        String employeeID = input.next();
-        while (!checkID(employeeID, employee)) {
-            System.out.println("==> EmployeeID not found, choose again or 'e'to exit");
-            employeeID = input.next();
-        }
-        if (employeeID.equals("e")) {
-            System.out.println("==> REMOVE COMMAND NOT COMPLETE");
+        if (employee.size() > 0) {
+            int employeeIndex, indexTurn;
+            System.out.println("==> Please choose EmployeeID below to remove turn...");
+            printActiveEmployee(employee);
+            String employeeID = input.next();
+            while (!checkID(employeeID, employee)) {
+                System.out.println("==> EmployeeID not found, choose again or 'E'to exit");
+                employeeID = input.next();
+            }
+            if (employeeID.toUpperCase().equals("E")) {
+                System.out.println("==> REMOVE COMMAND NOT COMPLETE");
+            } else {
+                employeeIndex = findEmployee(employeeID, employee);
+                indexTurn = getIndexTurn(employee.get(employeeIndex));
+                removeTurn(employee.get(employeeIndex), indexTurn);
+                UpdateTotal(employee.get(employeeIndex));
+                System.out.println("Turn list update for " + employee.get(employeeIndex).getEmpName());
+                System.out.println(getStringTurn(employee.get(employeeIndex)));
+            }
         } else {
-            employeeIndex = findEmployee(employeeID, employee);
-            indexTurn = getIndexTurn(employee.get(employeeIndex));
-            removeTurn(employee.get(employeeIndex), indexTurn);
-            UpdateTotal(employee.get(employeeIndex));
-            System.out.println("Turn list update for " + employee.get(employeeIndex).getEmpName());
-            System.out.println(getStringTurn(employee.get(employeeIndex)));
+            //printActiveEmployee(employee);
+            System.out.println("==> DON'T HAVE ANY EMPLOYEE SIGN IN");
         }
     }
 
 // COMMAND REVERT WORKING STATUS
     public static void command5(ArrayList<Employee> employee, Scanner input) {
         if (employee.size() > 0) {
-            int employeeIndex, indexTurn;
+            int employeeIndex;
             System.out.println("==> Please choose EmployeeID below to change working status...");
             printActiveEmployee(employee);
             String employeeID = input.next();
             while (!checkID(employeeID, employee)) {
-                System.out.println("==> EmployeeID not found, choose again or 'e'to exit");
+                System.out.println("==> EmployeeID not found, choose again or 'E'to exit");
                 employeeID = input.next();
             }
-            if (employeeID.equals("e")) {
+            if (employeeID.toUpperCase().equals("E")) {
                 System.out.println("==> REMOVE COMMAND NOT COMPLETE");
             } else {
                 employeeIndex = findEmployee(employeeID, employee);
@@ -251,6 +269,40 @@ public class TurnControl {
                     setWorking(employee.get(employeeIndex), true);
                 }
                 System.out.println("Working status of employee \"" + employee.get(employeeIndex).getEmpName() + "\" change from \"" + !employee.get(employeeIndex).isIsWorking() + "\" to \"" + employee.get(employeeIndex).isIsWorking() + "\"");
+            }
+        } else {
+            System.out.println("==> DON'T HAVE ANY EMPLOYEE SIGN IN");
+        }
+    }
+
+// COMMAND EDIT TURN
+    public static void command6(ArrayList<Employee> employee, Scanner input) {
+
+        if (employee.size() > 0) {
+            System.out.println("==> Please choose EmployeeID below to EDIT turn...");
+            printActiveEmployee(employee);
+            String employeeID = input.next();
+            while (!checkID(employeeID, employee)) {
+                System.out.println("==> EmployeeID not found, choose again or 'E'to exit");
+                employeeID = input.next();
+            }
+            if (employeeID.toUpperCase().equals("E")) {
+                System.out.println("==> Command not complete");
+            } else {
+                int index = findEmployee(employeeID, employee);
+                int indexTurn = getIndexTurn(employee.get(index));
+                System.out.println("==> Enter newamount:");
+                String amount = input.next();
+                System.out.println("==> Enter: '0'-Free Turn ; '1'-Count Turn");
+                String freeTurnFlag = input.next();
+
+                employee.get(index).turnList.set(index, amount);
+                employee.get(index).turnList.set((index + 1), freeTurnFlag);
+
+                System.out.println("Turn list update for " + employee.get(index).getEmpName());
+                System.out.println(getStringTurn(employee.get(index)));
+                UpdateTotal(employee.get(index));
+                System.out.println("==> Update " + amount + "$ to \"" + employee.get(index).getEmpName() + "\" Successful");
             }
         } else {
             System.out.println("==> DON'T HAVE ANY EMPLOYEE SIGN IN");
@@ -293,7 +345,17 @@ public class TurnControl {
         return output;
     }
 
+// HELP FUNCTION - GET INDEX BY VALUE 
+    public static int getIndexByValue(ArrayList<Employee> e, int value) {
+        for (int i = 0; i < e.size(); i++) {
+            if (e.get(i).getPosition() == value) {
+                return i;
+            }
+        }
+        return 0;
+    }
 // DISPLAY FUNCTION - PRINT ACTIVE EMPLOYEE LIST
+
     public static void printActiveEmployee(ArrayList<Employee> employee) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
         System.out.println("\nActive Employee\n");
@@ -317,25 +379,139 @@ public class TurnControl {
         tb.addRow("EmployeeID", "EmployeeName", "CheckInTime", "Total", "Total_Turn", "Is_Working", "Status", "Position", "Turn_List");
         //System.out.println("EmployeeID\tEmployeeName\tCheckInTime\tTotal\tStatus\tPosition\n");
         for (int i = 0; i < employee.size(); i++) {
-            String turnList = getStringTurn(employee.get(i));
-            tb.addRow(employee.get(i).getEmployeeID(), employee.get(i).getEmpName(), dtf.format(employee.get(i).getCheckInTime()), Integer.toString(employee.get(i).getTotal()), Integer.toString(employee.get(i).getTotalTurn()), Boolean.toString(employee.get(i).isIsWorking()), Boolean.toString(employee.get(i).isActive()), Integer.toString(employee.get(i).position), turnList);
+            int index = getIndexByValue(employee, i + 1);
+            String turnList = getStringTurn(employee.get(index));
+            tb.addRow(employee.get(index).getEmployeeID(), employee.get(index).getEmpName(), dtf.format(employee.get(index).getCheckInTime()), Integer.toString(employee.get(index).getTotal()), Integer.toString(employee.get(index).getTotalTurn()), Boolean.toString(employee.get(index).isIsWorking()), Boolean.toString(employee.get(index).isActive()), Integer.toString(employee.get(index).position), turnList);
         }
         System.out.println(tb.toString());
     }
 
-    // @overload DISPLAY FUNCTION - PRINT EMPLOYEE LIST WITH FULL INFORMATION on condition STATUS
+// @overload DISPLAY FUNCTION - PRINT EMPLOYEE LIST WITH FULL INFORMATION on condition STATUS
     public static void print(ArrayList<Employee> employee, boolean status) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-        System.out.println("\nEmployee Table Details:");
-        TableBuilder tb = new TableBuilder();
-        tb.addRow("EmployeeID", "EmployeeName", "CheckInTime", "Total", "Total_Turn", "Is_Working", "Status", "Position", "Turn_List");
-        //System.out.println("EmployeeID\tEmployeeName\tCheckInTime\tTotal\tStatus\tPosition\n");
-        for (int i = 0; i < employee.size(); i++) {
-            if (employee.get(i).isActive() == status) {
-                String turnList = getStringTurn(employee.get(i));
-                tb.addRow(employee.get(i).getEmployeeID(), employee.get(i).getEmpName(), dtf.format(employee.get(i).getCheckInTime()), Integer.toString(employee.get(i).getTotal()), Integer.toString(employee.get(i).getTotalTurn()), Boolean.toString(employee.get(i).isIsWorking()), Boolean.toString(employee.get(i).isActive()), Integer.toString(employee.get(i).position), turnList);
+
+        if (status) {
+            ArrayList<Employee> tmpActive = new ArrayList<>();
+            for (int i = 0; i < employee.size(); i++) {
+                if (employee.get(i).isActive()) {
+                    tmpActive.add(employee.get(i));
+                }
+            }
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+            System.out.println("\nEmployee Table Details:");
+            TableBuilder tb = new TableBuilder();
+            tb.addRow("EmployeeID", "EmployeeName", "CheckInTime", "Total", "Total_Turn", "Is_Working", "Status", "Position", "Turn_List");
+            for (int i = 0; i < tmpActive.size(); i++) {
+                int index = getIndexByValue(tmpActive, i + 1);
+                String turnList = getStringTurn(tmpActive.get(index));
+                tb.addRow(tmpActive.get(index).getEmployeeID(),
+                        tmpActive.get(index).getEmpName(),
+                        dtf.format(tmpActive.get(index).getCheckInTime()),
+                        Integer.toString(tmpActive.get(index).getTotal()),
+                        Integer.toString(tmpActive.get(index).getTotalTurn()),
+                        Boolean.toString(tmpActive.get(index).isIsWorking()),
+                        Boolean.toString(tmpActive.get(index).isActive()),
+                        Integer.toString(tmpActive.get(index).position),
+                        turnList);
+            }
+            System.out.println(tb.toString());
+        } else {
+            ArrayList<Employee> tmpInActive = new ArrayList<>();
+            for (int i = 0; i < employee.size(); i++) {
+                if (!employee.get(i).isActive()) {
+                    tmpInActive.add(employee.get(i));
+                }
+            }
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+            System.out.println("\nEmployee Table Details:");
+            TableBuilder tb = new TableBuilder();
+            tb.addRow("EmployeeID", "EmployeeName", "CheckInTime", "Total", "Total_Turn", "Is_Working", "Status", "Position", "Turn_List");
+            for (int i = 0; i < tmpInActive.size(); i++) {
+                int index = getIndexByValue(tmpInActive, employee.size()-tmpInActive.size() + 1);
+                String turnList = getStringTurn(tmpInActive.get(index));
+                tb.addRow(tmpInActive.get(index).getEmployeeID(),
+                        tmpInActive.get(index).getEmpName(),
+                        dtf.format(tmpInActive.get(index).getCheckInTime()),
+                        Integer.toString(tmpInActive.get(index).getTotal()),
+                        Integer.toString(tmpInActive.get(index).getTotalTurn()),
+                        Boolean.toString(tmpInActive.get(index).isIsWorking()),
+                        Boolean.toString(tmpInActive.get(index).isActive()),
+                        Integer.toString(tmpInActive.get(index).position),
+                        turnList);
+            }
+            System.out.println(tb.toString());
+        }
+    }
+
+// HELP FUNCTIO - UPDATE POSITION BASE ON: TOTALTURN, CHECK-IN TIME
+/*
+    Pseudo Code:
+    1. Count number of member (active+inactive)
+    2. Grouping active, unactive (set position base on check-in time)
+    3. In group active, group by employee busy or free (base on isWorking value)
+    4. Group busy: label base on TotalTurn
+    5. The remain group:
+        a. sort by total
+        b. index sub-group by step turn value
+        c. sort by check_in time in each index sub group
+     */
+    public static void updatePosition(ArrayList<Employee> employee) {
+// total 10, active 6 , inactive 4
+// Get active, inactive number
+        int numberOfEmployee = employee.size();
+        int numberActive = 0;
+        int numberInActive = 0;
+        int numberBusyWorker = 0;
+        for (int i = 0; i < numberOfEmployee; i++) {
+            if (employee.get(i).isActive()) {
+                numberActive++;
+                if (employee.get(i).isIsWorking()) {
+                    numberBusyWorker++;
+                }
+            } else {
+                numberInActive++;
             }
         }
-        System.out.println(tb.toString());
+// create tmp array of inactive and sort inactive & index  position       
+        ArrayList<Employee> tmpInActive = new ArrayList<>(numberInActive);
+        for (int i = 0; i < employee.size(); i++) {
+            if (employee.get(i).isActive() == false) {
+                tmpInActive.add(employee.get(i));
+            }
+        }
+
+        BubbleSort b = new BubbleSort();
+        b.bubbleSortTime(tmpInActive);
+
+        for (int i = 0; i < tmpInActive.size(); i++) {
+            tmpInActive.get(i).setPosition(i + 1 + numberActive);
+        }
+// Create tmp array of busy worker and sort by total , index position
+        ArrayList<Employee> tmpBusyWorker = new ArrayList<>(numberBusyWorker);
+        for (int i = 0; i < employee.size(); i++) {
+            if (employee.get(i).isActive() && employee.get(i).isIsWorking()) {
+                tmpBusyWorker.add(employee.get(i));
+            }
+        }
+
+        b.bubbleSortTotal(tmpBusyWorker);
+
+        for (int i = 0; i < tmpBusyWorker.size(); i++) {
+            tmpBusyWorker.get(i).setPosition(numberActive - numberBusyWorker + i + 1);
+        }
+// 9 active , 4 working, 2 inactive --> free = 5, busy =5, inactive =2        
+// Create active list and not busy, sort and index
+        ArrayList<Employee> tmpFreeWorker = new ArrayList<>(numberActive - numberBusyWorker);
+        for (int i = 0; i < employee.size(); i++) {
+            if (employee.get(i).isActive() && !employee.get(i).isIsWorking()) {
+                tmpFreeWorker.add(employee.get(i));
+            }
+        }
+
+        b.bubbleSortTotalTurn(tmpFreeWorker);
+
+        for (int i = 0; i < tmpFreeWorker.size(); i++) {
+            tmpFreeWorker.get(i).setPosition(i + 1);
+        }
     }
+
 }
