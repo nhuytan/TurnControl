@@ -8,6 +8,7 @@ import java.util.Scanner;
 /**
  *
  * @author nhuytan
+ * add collaborator lanhsunam987
  */
 public class TurnControl {
 
