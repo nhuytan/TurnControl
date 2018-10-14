@@ -9,6 +9,7 @@ import java.util.Scanner;
  *
  * @author nhuytan
  * add collaborator lanhsunam987
+ * Test update rule
  */
 public class TurnControl {
 
