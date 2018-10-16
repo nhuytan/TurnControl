@@ -23,9 +23,18 @@ public class Employee {
     int position;
     boolean active;
     boolean isWorking;
+    int indexGroup;
 
     Employee() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public int getIndexGroup() {
+        return indexGroup;
+    }
+
+    public void setIndexGroup(int indexGroup) {
+        this.indexGroup = indexGroup;
     }
 
     public boolean isIsWorking() {
