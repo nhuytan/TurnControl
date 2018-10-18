@@ -3,6 +3,8 @@ package turncontrol;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Scanner;
 
 /**
@@ -24,8 +26,8 @@ public class TurnControl {
         TableBuilder tbCommandGuide = new TableBuilder();
         tbCommandGuide.addRow("Enter Command: ", "=========", "=========");
         tbCommandGuide.addRow("1-Check In", "2-Check Out", "e-Exit Program");
-        tbCommandGuide.addRow("p-Print List", "3-Add Turn", "4-Remove Turn");
-        tbCommandGuide.addRow("5-Revert Working Status", "6-Update Turn", "----");
+        tbCommandGuide.addRow("3-Add Turn", "4-Remove Turn","5-Revert Working Status");
+        tbCommandGuide.addRow("6-Update Turn", "p-print");
         String commandGuide = tbCommandGuide.toString();
 
         while (true) {
@@ -480,7 +482,7 @@ User choose Function return
             }
         }
         numberFreeWorker = numberActive - numberBusyWorker;
-        
+
         //System.out.println("employee object address is: "+ employee.);
 //Create tmp array of inactive and sort inactive & index  position 
 //Process Inactive worker array
@@ -528,7 +530,7 @@ User choose Function return
             int tmpIndexGroup = 1;
             if (tmpFreeWorker.size() > 0) {
                 tmpFreeWorker.get(0).setIndexGroup(tmpIndexGroup);
-                System.out.println("Employee: " + tmpFreeWorker.get(0).getEmpName() + " total_Turn: " + tmpFreeWorker.get(0).getTotalTurn());
+                //System.out.println("Employee: " + tmpFreeWorker.get(0).getEmpName() + " total_Turn: " + tmpFreeWorker.get(0).getTotalTurn());
                 if (tmpFreeWorker.size() > 1) {
                     for (int i = 1; i < tmpFreeWorker.size(); i++) {
                         if ((tmpFreeWorker.get(i).getTotalTurn() - tmpFreeWorker.get(i - 1).getTotalTurn()) >= 15) {
@@ -537,7 +539,7 @@ User choose Function return
                         } else {
                             tmpFreeWorker.get(i).setIndexGroup(tmpIndexGroup);
                         }
-                        System.out.println("Employee: " + tmpFreeWorker.get(i).getEmpName() + " total_Turn: " + tmpFreeWorker.get(i).getTotalTurn());
+                        //System.out.println("Employee: " + tmpFreeWorker.get(i).getEmpName() + " total_Turn: " + tmpFreeWorker.get(i).getTotalTurn());
                     }
                 }
             }
@@ -550,7 +552,7 @@ User choose Function return
                 for (int i = 1; i < tmpFreeWorker.size(); i++) {
                     if (tmpFreeWorker.get(i).getIndexGroup() != tmpFreeWorker.get(i - 1).getIndexGroup()) {
                         arraylist_employee.add(tmp);
-                        System.out.println("Added group: " + arraylist_employee.size()+ " && with "+tmp.size()+" elements");
+                        System.out.println("Added group: " + arraylist_employee.size() + " && with " + tmp.size() + " elements");
                         tmp = new ArrayList<Employee>();
                         tmp.add(tmpFreeWorker.get(i));
                         //arraylist_employee.get(index).add(tmpFreeWorker.get(i));
@@ -560,15 +562,14 @@ User choose Function return
                     }
                 }
                 arraylist_employee.add(tmp);
-                System.out.println("Added last group: " + arraylist_employee.size()+ " && with "+tmp.size()+" elements");
+                System.out.println("Added last group: " + arraylist_employee.size() + " && with " + tmp.size() + " elements");
 
             }
 
             for (int i = 0; i < arraylist_employee.size(); i++) {
-                int position =1;
+                int position = 1;
                 b.bubbleSortTime(arraylist_employee.get(i));
-                for (int j=0;j<arraylist_employee.get(i).size();j++)
-                {
+                for (int j = 0; j < arraylist_employee.get(i).size(); j++) {
                     arraylist_employee.get(i).get(j).setPosition(position);
                     position++;
                 }

@@ -7,6 +7,7 @@ package turncontrol;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  *
@@ -107,5 +108,26 @@ public class test1 {
         this.position = position;
     }
     
+    public void testSwap()
+    {
+        ArrayList<Employee> employee = new ArrayList<>(20);
+        System.out.println("employee adress " + System.identityHashCode(employee));
+        // begin test
+        Employee e1 = new Employee("1","tan",LocalDateTime.now());
+        System.out.println("e1 address " + System.identityHashCode(e1));
+        Employee e2 = new Employee("2","loc",LocalDateTime.now());
+        System.out.println("e2 address " + System.identityHashCode(e2));
+
+        employee.add(e1);
+        employee.add(e2);
+        System.out.println("e1 address after add " + System.identityHashCode(employee.get(0)));
+        System.out.println("e2 address adter add" + System.identityHashCode(employee.get(1)));
+
+        //swap
+        Collections.swap(employee, 0, 1);
+        System.out.println("address after swap 0 " + System.identityHashCode(employee.get(0)));
+        System.out.println("address after swap 1 " + System.identityHashCode(employee.get(1)));
+        //end test
+    }
 
 }
