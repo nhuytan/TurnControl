@@ -19,14 +19,15 @@ public class TurnControl {
 
         Scanner input = new Scanner(System.in);
         //Employee[] employee = new Employee[20];
-        ArrayList<Employee> employee = new ArrayList<>(20);
+        ArrayList<Employee> employee = new ArrayList<>(50);
+        ArrayList<ArrayList<Employee>> arrOfArrEmployee = new ArrayList<ArrayList<Employee>>(50);
         String employeeName, employeeID;
         int size;
         LocalDateTime checkIn, checkOut;
         TableBuilder tbCommandGuide = new TableBuilder();
         tbCommandGuide.addRow("Enter Command: ", "=========", "=========");
         tbCommandGuide.addRow("1-Check In", "2-Check Out", "e-Exit Program");
-        tbCommandGuide.addRow("3-Add Turn", "4-Remove Turn","5-Revert Working Status");
+        tbCommandGuide.addRow("3-Add Turn", "4-Remove Turn", "5-Revert Working Status");
         tbCommandGuide.addRow("6-Update Turn", "p-print");
         String commandGuide = tbCommandGuide.toString();
 
@@ -35,22 +36,23 @@ public class TurnControl {
             String a = input.next();
             if (a.equals("1")) {
                 command1(employee, input);
-                updatePosition(employee);
+                updatePosition(employee, arrOfArrEmployee);
+                //print(arrOfArrEmployee);
             } else if (a.equals("2")) {
                 command2(employee, input);
-                updatePosition(employee);
+                updatePosition(employee, arrOfArrEmployee);
             } else if (a.equals("3")) {
                 command3(employee, input);
-                updatePosition(employee);
+                updatePosition(employee, arrOfArrEmployee);
             } else if (a.equals("4")) {
                 command4(employee, input);
-                updatePosition(employee);
+                updatePosition(employee, arrOfArrEmployee);
             } else if (a.equals("5")) {
                 command5(employee, input);
-                updatePosition(employee);
+                updatePosition(employee, arrOfArrEmployee);
             } else if (a.equals("6")) {
                 command6(employee, input);
-                updatePosition(employee);
+                updatePosition(employee, arrOfArrEmployee);
             } else if (a.toUpperCase().equals("E")) {
                 //print(employee);
                 System.out.println("==> ===PROGRAM EXIT===");
@@ -63,7 +65,7 @@ public class TurnControl {
                         print(employee, true);
                     }
                 } else {
-                    print(employee);
+                    updatePosition(employee, arrOfArrEmployee);
                 }
             } else {
                 System.out.println("==> WRONG COMMAND, TRY AGAIN <==!!");
@@ -164,8 +166,8 @@ User choose Function return
         String employeeID = Integer.toString(size + 1);
         LocalDateTime checkIn = LocalDateTime.now();
         employee.add(new Employee(employeeID, employeeName, checkIn));
-        //updatePosition(employee);
         System.out.println("==> Employee \"" + employeeName + "\" Check-In Completed");
+        //updatePosition(employee, arrOfArrEmployee);
 
     }
 
@@ -372,24 +374,32 @@ User choose Function return
         // command
     }
 
+    public static void printAddr(ArrayList<Employee> e) {
+        for (int i = 0; i < e.size(); i++) {
+            System.out.println("Employee: " + e.get(i).getEmpName() + "  Index Group: " + e.get(i).getIndexGroup()
+                    + "  POSITION " + (i + 1) + " :" + System.identityHashCode(e.get(i)));
+        }
+    }
+
 // DISPLAY FUNCTION - PRINT EMPLOYEE LIST WITH FULL INFORMATION 
-    public static void print(ArrayList<Employee> employee) {
+    public static void print(ArrayList<ArrayList<Employee>> employee) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
         System.out.println("\nEmployee Table Details:");
         TableBuilder tb = new TableBuilder();
         tb.addRow("EmployeeID", "EmployeeName", "CheckInTime", "Total", "Total_Turn", "Is_Working", "Status", "Position", "Turn_List", "Index_Group");
-        //System.out.println("EmployeeID\tEmployeeName\tCheckInTime\tTotal\tStatus\tPosition\n");
-        for (int i = 0; i < employee.size(); i++) {
-            int index = getIndexByValue(employee, i + 1);
-            String turnList = getStringTurn(employee.get(index));
-            tb.addRow(employee.get(index).getEmployeeID(), employee.get(index).getEmpName(),
-                    dtf.format(employee.get(index).getCheckInTime()),
-                    Integer.toString(employee.get(index).getTotal()),
-                    Integer.toString(employee.get(index).getTotalTurn()),
-                    Boolean.toString(employee.get(index).isIsWorking()),
-                    Boolean.toString(employee.get(index).isActive()),
-                    Integer.toString(employee.get(index).position), turnList,
-                    Integer.toString(employee.get(index).getIndexGroup()));
+        for (int j = 0; j < employee.size(); j++) {
+            for (int i = 0; i < employee.get(j).size(); i++) {
+                int index = getIndexByValue(employee.get(j), i + 1);
+                String turnList = getStringTurn(employee.get(j).get(index));
+                tb.addRow(employee.get(j).get(index).getEmployeeID(), employee.get(j).get(index).getEmpName(),
+                        dtf.format(employee.get(j).get(index).getCheckInTime()),
+                        Integer.toString(employee.get(j).get(index).getTotal()),
+                        Integer.toString(employee.get(j).get(index).getTotalTurn()),
+                        Boolean.toString(employee.get(j).get(index).isIsWorking()),
+                        Boolean.toString(employee.get(j).get(index).isActive()),
+                        Integer.toString(employee.get(j).get(index).position), turnList,
+                        Integer.toString(employee.get(j).get(index).getIndexGroup()));
+            }
         }
         System.out.println(tb.toString());
     }
@@ -462,7 +472,8 @@ User choose Function return
         b. index sub-group by step turn value
         c. sort by check_in time in each index sub group
      */
-    public static void updatePosition(ArrayList<Employee> employee) {
+    public static void updatePosition(ArrayList<Employee> employee, 
+            ArrayList<ArrayList<Employee>> arrOfArrEmployee) {
 // total 10, active 6 , inactive 4
 // Get active, inactive number
         int numberOfEmployee = employee.size();
@@ -483,40 +494,7 @@ User choose Function return
         }
         numberFreeWorker = numberActive - numberBusyWorker;
 
-        //System.out.println("employee object address is: "+ employee.);
-//Create tmp array of inactive and sort inactive & index  position 
-//Process Inactive worker array
-        if (numberInActive > 0) {
-            ArrayList<Employee> tmpInActive = new ArrayList<>(numberInActive);
-            for (int i = 0; i < employee.size(); i++) {
-                if (employee.get(i).isActive() == false) {
-                    tmpInActive.add(employee.get(i));
-                }
-            }
-            b.bubbleSortTime(tmpInActive);
-            for (int i = 0; i < tmpInActive.size(); i++) {
-                tmpInActive.get(i).setPosition(i + 1 + numberActive);
-            }
-        }
-// Create tmp array of busy worker and sort by total , index position
-// Process Busy worker array
-        if (numberBusyWorker > 0) {
-            ArrayList<Employee> tmpBusyWorker = new ArrayList<>(numberBusyWorker);
-            for (int i = 0; i < employee.size(); i++) {
-                if (employee.get(i).isActive() && employee.get(i).isIsWorking()) {
-                    tmpBusyWorker.add(employee.get(i));
-                }
-            }
-            b.bubbleSortTotal(tmpBusyWorker);
-//set Position
-            for (int i = 0; i < tmpBusyWorker.size(); i++) {
-                tmpBusyWorker.get(i).setPosition(numberActive - numberBusyWorker + i + 1);
-            }
-        }
-// 9 active , 4 working, 2 inactive --> free = 5, busy =5, inactive =2        
-// Create active list and not busy, sort and index
-// Process Free worker array
-
+// Process Free Worker 
         if (numberFreeWorker > 0) {
             ArrayList<Employee> tmpFreeWorker = new ArrayList<>(numberFreeWorker);
             for (int i = 0; i < employee.size(); i++) {
@@ -524,8 +502,10 @@ User choose Function return
                     tmpFreeWorker.add(employee.get(i));
                 }
             }
-
+            //System.out.println("\nBEFORE SORT:");
+            //printAddr(tmpFreeWorker);
             b.bubbleSortTotalTurn(tmpFreeWorker);
+
 //index group by Step_Turn
             int tmpIndexGroup = 1;
             if (tmpFreeWorker.size() > 0) {
@@ -543,38 +523,71 @@ User choose Function return
                     }
                 }
             }
+            //System.out.println("\nAFTER SORT:");
+            //printAddr(tmpFreeWorker);
 
-            ArrayList<ArrayList<Employee>> arraylist_employee = new ArrayList<ArrayList<Employee>>(tmpIndexGroup);
-            if (tmpFreeWorker.size() > 1) {
+            /*=====================================================================================*/
+            arrOfArrEmployee = new ArrayList<ArrayList<Employee>>(tmpIndexGroup);
+            if (tmpFreeWorker.size() > 0) {
                 ArrayList<Employee> tmp = new ArrayList<Employee>();
                 tmp.add(tmpFreeWorker.get(0));
-                //int tmp = tmpFreeWorker.get(0).getIndexGroup();
                 for (int i = 1; i < tmpFreeWorker.size(); i++) {
                     if (tmpFreeWorker.get(i).getIndexGroup() != tmpFreeWorker.get(i - 1).getIndexGroup()) {
-                        arraylist_employee.add(tmp);
-                        System.out.println("Added group: " + arraylist_employee.size() + " && with " + tmp.size() + " elements");
+                        arrOfArrEmployee.add(tmp);
+                        System.out.println("Added group: " + arrOfArrEmployee.size() + " && with " + tmp.size() + " elements");
                         tmp = new ArrayList<Employee>();
                         tmp.add(tmpFreeWorker.get(i));
-                        //arraylist_employee.get(index).add(tmpFreeWorker.get(i));
                     } else {
                         tmp.add(tmpFreeWorker.get(i));
-                        //arraylist_employee.get(index).add(tmpFreeWorker.get(i));
                     }
                 }
-                arraylist_employee.add(tmp);
-                System.out.println("Added last group: " + arraylist_employee.size() + " && with " + tmp.size() + " elements");
-
+                arrOfArrEmployee.add(tmp);
+                System.out.println("Added last group: " + arrOfArrEmployee.size() + " && with " + tmp.size() + " elements");
             }
 
-            for (int i = 0; i < arraylist_employee.size(); i++) {
-                int position = 1;
-                b.bubbleSortTime(arraylist_employee.get(i));
-                for (int j = 0; j < arraylist_employee.get(i).size(); j++) {
-                    arraylist_employee.get(i).get(j).setPosition(position);
+            int position = 1;
+            for (int i = 0; i < arrOfArrEmployee.size(); i++) {
+                b.bubbleSortTime(arrOfArrEmployee.get(i));
+                for (int j = 0; j < arrOfArrEmployee.get(i).size(); j++) {
+                    arrOfArrEmployee.get(i).get(j).setPosition(position);
                     position++;
                 }
             }
-        }
-    }
 
+// Create tmp array of busy worker and sort by total , index position
+// Process Busy worker array
+            if (numberBusyWorker > 0) {
+                ArrayList<Employee> tmpBusyWorker = new ArrayList<>(numberBusyWorker);
+                for (int i = 0; i < employee.size(); i++) {
+                    if (employee.get(i).isActive() && employee.get(i).isIsWorking()) {
+                        tmpBusyWorker.add(employee.get(i));
+                    }
+                }
+                b.bubbleSortTotal(tmpBusyWorker);
+                //set Position
+                for (int i = 0; i < tmpBusyWorker.size(); i++) {
+                    tmpBusyWorker.get(i).setPosition(numberActive - numberBusyWorker + i + 1);
+                }
+                arrOfArrEmployee.add(tmpBusyWorker);
+            }
+
+//Create tmp array of inactive and sort inactive & index  position 
+//Process Inactive worker array
+            if (numberInActive > 0) {
+                ArrayList<Employee> tmpInActive = new ArrayList<>(numberInActive);
+                for (int i = 0; i < employee.size(); i++) {
+                    if (employee.get(i).isActive() == false) {
+                        tmpInActive.add(employee.get(i));
+                    }
+                }
+                b.bubbleSortTime(tmpInActive);
+                for (int i = 0; i < tmpInActive.size(); i++) {
+                    tmpInActive.get(i).setPosition(i + 1 + numberActive);
+                }
+                arrOfArrEmployee.add(tmpInActive);
+            }
+        }
+        
+        print(arrOfArrEmployee);
+    }
 }
