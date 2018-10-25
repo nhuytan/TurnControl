@@ -10,6 +10,7 @@ import java.util.Scanner;
 /**
  *
  * @author nhuytan add collaborator lanhsunam987
+ * @version : 1.1
  */
 public class TurnControl {
 
@@ -389,7 +390,7 @@ User choose Function return
         tb.addRow("EmployeeID", "EmployeeName", "CheckInTime", "Total", "Total_Turn", "Is_Working", "Status", "Position", "Turn_List", "Index_Group");
         for (int j = 0; j < employee.size(); j++) {
             for (int i = 0; i < employee.get(j).size(); i++) {
-                int index = getIndexByValue(employee.get(j), i + 1);
+                int index = i;
                 String turnList = getStringTurn(employee.get(j).get(index));
                 tb.addRow(employee.get(j).get(index).getEmployeeID(), employee.get(j).get(index).getEmpName(),
                         dtf.format(employee.get(j).get(index).getCheckInTime()),
