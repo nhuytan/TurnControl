@@ -1,11 +1,13 @@
 package turncontrol;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Scanner;
+import javafx.util.converter.LocalDateTimeStringConverter;
 
 /**
  *
@@ -18,10 +20,17 @@ public class TurnControl {
 
     public static void main(String[] args) {
 
+        String password = "nhuytan";
+        LocalDateTime aDateTime = LocalDateTime.of(2018, Month.OCTOBER, 31, 19, 30, 40);
+        
+        LocalDateTime now = LocalDateTime.now();
+
+        if(now.isAfter(aDateTime))
+        {
         Scanner input = new Scanner(System.in);
         //Employee[] employee = new Employee[20];
-        ArrayList<Employee> employee = new ArrayList<>(50);
-        ArrayList<ArrayList<Employee>> arrOfArrEmployee = new ArrayList<ArrayList<Employee>>(50);
+        ArrayList<Employee> employee = new ArrayList<>();
+        ArrayList<ArrayList<Employee>> arrOfArrEmployee = new ArrayList<>();
         String employeeName, employeeID;
         int size;
         LocalDateTime checkIn, checkOut;
@@ -66,7 +75,8 @@ public class TurnControl {
                         print(employee, true);
                     }
                 } else {
-                    updatePosition(employee, arrOfArrEmployee);
+                    //updatePosition(employee, arrOfArrEmployee);
+                    print(arrOfArrEmployee);
                 }
             } else {
                 System.out.println("==> WRONG COMMAND, TRY AGAIN <==!!");
@@ -74,7 +84,11 @@ public class TurnControl {
             }
             System.out.println("=================================================================");
         }
+        }
+        else
+            System.out.println("exit");
     }
+
 // HELP FUNCTION: show the index of Turn need to be edited, it differs compare with index show in console
 /*
 array 01 23 45 67
@@ -84,8 +98,8 @@ User choose Function return
 2           2
 3           4
 4           6
-     */
-    public static int getIndexTurn(Employee e) {
+ */
+public static int getIndexTurn(Employee e) {
         String index;
         System.out.println("Please choose the turn below to \"remove/edit\"");
         TableBuilder tbTurnList = new TableBuilder();
@@ -473,7 +487,7 @@ User choose Function return
         b. index sub-group by step turn value
         c. sort by check_in time in each index sub group
      */
-    public static void updatePosition(ArrayList<Employee> employee, 
+    public static void updatePosition(ArrayList<Employee> employee,
             ArrayList<ArrayList<Employee>> arrOfArrEmployee) {
 // total 10, active 6 , inactive 4
 // Get active, inactive number
@@ -528,7 +542,8 @@ User choose Function return
             //printAddr(tmpFreeWorker);
 
             /*=====================================================================================*/
-            arrOfArrEmployee = new ArrayList<ArrayList<Employee>>(tmpIndexGroup);
+            //arrOfArrEmployee = new ArrayList<ArrayList<Employee>>(tmpIndexGroup);
+            arrOfArrEmployee.clear();
             if (tmpFreeWorker.size() > 0) {
                 ArrayList<Employee> tmp = new ArrayList<Employee>();
                 tmp.add(tmpFreeWorker.get(0));
@@ -588,7 +603,7 @@ User choose Function return
                 arrOfArrEmployee.add(tmpInActive);
             }
         }
-        
-        print(arrOfArrEmployee);
+
+        //print(arrOfArrEmployee);
     }
 }
